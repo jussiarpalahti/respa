@@ -14,7 +14,7 @@ resources:
   - container: py37
     image: python:3.7
     env:
-      DATABASE_URL: "postgres://django:djangotest@db/respa"
+      DATABASE_URL: "postgis://django:djangotest@db/respa"
 
 pool:
   vmImage: 'ubuntu-latest'
