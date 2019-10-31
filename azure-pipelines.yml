@@ -36,6 +36,7 @@ steps:
   - task: PythonScript@0
     displayName: 'Export project path'
     inputs:
+      pythonInterpreter: 'python3'
       scriptSource: 'inline'
       script: |
         """Search all subdirectories for `manage.py`."""
