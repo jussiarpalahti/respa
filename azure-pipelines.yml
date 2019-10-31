@@ -6,7 +6,7 @@
 resources:
   containers:
   - container: db
-    image: postgres:9
+    image: postgres:10
     ports:
       - 5432:5432
     env:
@@ -54,7 +54,7 @@ steps:
   
   - script: |
       sudo apt update
-      sudo apt install -y libgdal-dev postgresql-9.6-postgis-2.4
+      sudo apt install -y libgdal-dev postgresql-10-postgis-2.4
       python -m pip install --upgrade pip
       python -m venv ./venv
       ./venv/bin/pip install -r requirements.txt
