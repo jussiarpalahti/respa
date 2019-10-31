@@ -3,17 +3,112 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger:
-- master
+resources:
+  containers:
+  - container: db
+    image: postgres:10
+    env:
+      POSTGRES_USER: "django"
+      POSTGRES_PASSWORD: "djangotest"
+      POSTGRES_DB: "respa"
+  - container: py37
+    image: python:3.7
+    env:
+      DATABASE_URL: "postgres://django:djangotest@db/respa"
 
 pool:
   vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+jobs:
+- job: RunInContainer
+  pool:
+    vmImage: 'ubuntu-latest'
+  
+  services:
+    db: db
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+  strategy:
+    matrix:
+      py36:
+        containerResource: py37
+  
+  container: $[ variables['containerResource'] ]
+
+  steps:
+    
+    - task: PythonScript@0
+      displayName: 'Export project path'
+      inputs:
+        scriptSource: 'inline'
+        script: |
+          """Search all subdirectories for `manage.py`."""
+          from glob import iglob
+          from os import path
+          # Python >= 3.5
+          manage_py = next(iglob(path.join('**', 'manage.py'), recursive=True), None)
+          if not manage_py:
+              raise SystemExit('Could not find a Django project')
+          project_location = path.dirname(path.abspath(manage_py))
+          print('Found Django project in', project_location)
+          print('##vso[task.setvariable variable=projectRoot]{}'.format(project_location))
+    
+    - script: printenv
+    
+    - script: |
+        sudo apt update
+        sudo apt install -y libgdal-dev postgresql-9.6-postgis-2.4
+        python -m pip install --upgrade pip
+        python -m venv ./venv
+        ./venv/bin/pip install -r requirements.txt
+      displayName: 'Install prerequisites'
+    
+    - script: |
+        pushd '$(projectRoot)'
+        ./venv/bin/python manage.py test
+      displayName: 'Run tests'
+    
+    - task: Bash@3
+      inputs:
+        targetType: 'inline'
+        script: |
+          env
+          COMMIT=$(echo $BUILD_SOURCEVERSION | cut -c1-7)
+          echo "This is the commit short form $COMMIT"
+          env
+          
+          # create pipeline variables
+          echo "##vso[task.setvariable variable=commit]$COMMIT"
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    
+    - script: printenv
+
+    - task: DockerInstaller@0
+      inputs:
+        dockerVersion: '17.09.0-ce'
+
+    - task: Docker@2
+      inputs:
+        containerRegistry: 'azurereg'
+        repository: 'test'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: |
+          $(commit)
+          $(Build.SourceBranchName)
+      condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+    
+    - script: printenv
+
+    # - task: KubectlInstaller@0
+    #   inputs:
+    #     kubectlVersion: '1.13.0'
+
+    # - task: Kubernetes@1
+    #   inputs:
+    #     connectionType: 'Kubernetes Service Connection'
+    #     kubernetesServiceEndpoint: 'kubekonn'
+    #     command: 'set'
+    #     arguments: 'image deployment testdep testdep=devhel.azurecr.io/test:$(commit)'
+    #     secretType: 'dockerRegistry'
+    #     containerRegistryType: 'Azure Container Registry'
+    #   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
