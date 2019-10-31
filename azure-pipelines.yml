@@ -7,7 +7,8 @@ resources:
   containers:
   - container: db
     image: postgres:9
-    ports: 5432:5432
+    ports:
+      - 5432:5432
     env:
       POSTGRES_USER: "django"
       POSTGRES_PASSWORD: "djangotest"
