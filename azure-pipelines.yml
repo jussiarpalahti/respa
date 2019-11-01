@@ -55,8 +55,8 @@ steps:
   - script: |
       sudo apt update
       sudo apt install -y libgdal-dev postgresql-9.5-postgis-2.2 python3-venv python3-pip
-      python -m pip install --upgrade pip
-      python -m venv ./venv
+      python3 -m pip install --upgrade pip
+      python3 -m venv ./venv
       ./venv/bin/pip install -r requirements.txt
     displayName: 'Install prerequisites'
   
