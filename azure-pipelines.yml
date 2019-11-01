@@ -54,8 +54,7 @@ steps:
   
   - script: |
       sudo apt update
-      sudo apt install -y libgdal-dev postgresql-10 postgresql-10-postgis-2.4 python3-venv python3-pip npm gettext
-      sudo npm install -g yarn
+      sudo apt install -y libgdal-dev postgresql-10 postgresql-10-postgis-2.4 python3-venv python3-pip gettext
       python3 -m pip install --upgrade pip
       python3 -m venv ./venv
       ./venv/bin/pip install codecov -r requirements.txt
