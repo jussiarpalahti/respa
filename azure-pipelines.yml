@@ -62,7 +62,7 @@ steps:
   
   - script: |
       pushd '$(projectRoot)'
-      export DATABASE_URL="postgis://django:djangotest/respa"
+      export DATABASE_URL="postgis://django:djangotest@localhost/respa"
       ./venv/bin/python manage.py test
     
     displayName: 'Run tests'
