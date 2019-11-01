@@ -104,16 +104,16 @@ steps:
   
   - script: printenv
 
-  # - task: KubectlInstaller@0
-  #   inputs:
-  #     kubectlVersion: '1.13.0'
+  - task: KubectlInstaller@0
+    inputs:
+      kubectlVersion: '1.13.0'
 
-  # - task: Kubernetes@1
-  #   inputs:
-  #     connectionType: 'Kubernetes Service Connection'
-  #     kubernetesServiceEndpoint: 'kubekonn'
-  #     command: 'set'
-  #     arguments: 'image deployment testdep testdep=devhel.azurecr.io/test:$(commit)'
-  #     secretType: 'dockerRegistry'
-  #     containerRegistryType: 'Azure Container Registry'
-  #   condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
+  - task: Kubernetes@1
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceEndpoint: 'kubekonn'
+      command: 'set'
+      arguments: 'image deployment django django=devhel.azurecr.io/respa:$(commit)'
+      secretType: 'dockerRegistry'
+      containerRegistryType: 'Azure Container Registry'
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
