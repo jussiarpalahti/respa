@@ -3,16 +3,16 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-resources:
-  containers:
-  - container: db
-    image: postgres:10
-    ports:
-      - 5432:5432
-    env:
-      POSTGRES_USER: "django"
-      POSTGRES_PASSWORD: "djangotest"
-      POSTGRES_DB: "respa"
+# resources:
+#   containers:
+#   - container: db
+#     image: postgres:10
+#     ports:
+#       - 5432:5432
+#     env:
+#       POSTGRES_USER: "django"
+#       POSTGRES_PASSWORD: "djangotest"
+#       POSTGRES_DB: "respa"
   # - container: py37
   #   image: python:3.7
   #   env:
@@ -21,8 +21,8 @@ resources:
 pool:
   vmImage: 'ubuntu-18.04'
 
-services:
-  db: db
+# services:
+#   db: db
 
   # strategy:
   #   matrix:
@@ -54,10 +54,12 @@ steps:
   
   - script: |
       sudo apt update
-      sudo apt install -y libgdal-dev postgresql-10-postgis-2.4 python3-venv python3-pip
+      sudo apt install -y libgdal-dev postgresql-10 postgresql-10-postgis-2.4 python3-venv python3-pip
       python3 -m pip install --upgrade pip
       python3 -m venv ./venv
       ./venv/bin/pip install -r requirements.txt
+      psql template1 -c 'CREATE EXTENSION IF NOT EXISTS hstore;'
+      psql template1 -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
     displayName: 'Install prerequisites'
   
   - script: |
