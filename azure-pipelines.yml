@@ -58,8 +58,9 @@ steps:
       python3 -m pip install --upgrade pip
       python3 -m venv ./venv
       ./venv/bin/pip install -r requirements.txt
-      psql template1 -c 'CREATE EXTENSION IF NOT EXISTS hstore;'
-      psql template1 -c 'CREATE EXTENSION IF NOT EXISTS postgis;'
+      sudo -H -u postgres bash -c 'createuser $USER'
+      sudo -H -u postgres bash -c 'psql template1 -c "CREATE EXTENSION IF NOT EXISTS hstore;"'
+      sudo -H -u postgres bash -c 'psql template1 -c "CREATE EXTENSION IF NOT EXISTS postgis;"'
     displayName: 'Install prerequisites'
   
   - script: |
