@@ -54,11 +54,11 @@ steps:
   
   - script: |
       sudo apt update
-      sudo apt install -y libgdal-dev postgresql-10 postgresql-10-postgis-2.4 python3-venv python3-pip
+      sudo apt install -y libgdal-dev postgresql-10 postgresql-10-postgis-2.4 python3-venv python3-pip npm gettext
+      sudo npm install -g yarn
       python3 -m pip install --upgrade pip
       python3 -m venv ./venv
-      ./venv/bin/pip install -r requirements.txt
-
+      ./venv/bin/pip install codecov -r requirements.txt
       sudo -H -u postgres bash -c 'createuser -s vsts'
       sudo -H -u postgres bash -c 'psql template1 -c "CREATE EXTENSION IF NOT EXISTS hstore;"'
       sudo -H -u postgres bash -c 'psql template1 -c "CREATE EXTENSION IF NOT EXISTS postgis;"'
@@ -66,6 +66,8 @@ steps:
   
   - script: |
       pushd '$(projectRoot)'
+      ./build-resources
+      python3 ./manage.py compilemessages
       export DATABASE_URL="postgis:///respa"
       ./venv/bin/pytest --cov . --doctest-modules
     
