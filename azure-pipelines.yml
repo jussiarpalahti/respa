@@ -113,7 +113,7 @@ steps:
       connectionType: 'Kubernetes Service Connection'
       kubernetesServiceEndpoint: 'kubekonn'
       command: 'set'
-      arguments: 'image deployment django django=devhel.azurecr.io/respa:$(commit)'
+      arguments: 'image deployment django-deployment django=devhel.azurecr.io/respa:$(commit)'
       secretType: 'dockerRegistry'
       containerRegistryType: 'Azure Container Registry'
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'))
