@@ -58,14 +58,14 @@ steps:
       python3 -m pip install --upgrade pip
       python3 -m venv ./venv
       ./venv/bin/pip install -r requirements.txt
-      sudo -H -u postgres bash -c 'createuser $USER'
+      sudo -H -u postgres bash -c 'createuser -S $USER'
       sudo -H -u postgres bash -c 'psql template1 -c "CREATE EXTENSION IF NOT EXISTS hstore;"'
       sudo -H -u postgres bash -c 'psql template1 -c "CREATE EXTENSION IF NOT EXISTS postgis;"'
     displayName: 'Install prerequisites'
   
   - script: |
       pushd '$(projectRoot)'
-      export DATABASE_URL="postgis://django:djangotest@localhost/respa"
+      export DATABASE_URL="postgis:///respa"
       ./venv/bin/pytest --cov . --doctest-modules
     
     displayName: 'Run tests'
