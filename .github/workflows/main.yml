@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - develop
+      - feature/gh_azure_action
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Azure Pipelines Action
+      uses: Azure/pipelines@v1
+      with:
+        azure-devops-project-url: 'https://dev.azure.com/cityofhelsinki/helsinki-infra'
+        # Name of the Azure Pipeline to be triggered
+        azure-pipeline-name: 'respa'
+        # Paste personal access token of the user as value of secret variable:AZURE_DEVOPS_TOKEN
+        azure-devops-token: '${{ secrets.AZURE_DEVOPS_TOKEN }}'
